@@ -1,0 +1,106 @@
+import java.lang.*;
+import java.util.*;
+class Demo{
+public
+	int n;
+    int TAT=0,WT=0;
+	int[][] table;
+    Scanner sc1 =new Scanner(System.in);
+
+	Demo(){
+		System.out.println("Enter number of processes : ");
+		n=sc1.nextInt();
+	}
+
+	void createTable() {
+
+        //Taking arrival time(A) and process time(B) from user
+
+        table=new int[n][5];
+        System.out.println("Enter arrival time and burst time of the "+n+" processes : ");
+        for(int i=0; i<n;i++){
+            table[i][0]=sc1.nextInt();
+            table[i][1]=sc1.nextInt();
+        }
+
+        //Calculating completion time(C) of processes
+
+        table[0][2]=table[0][0] + table[0][1];
+        for(int i=1;i<n;i++){
+            if(table[i][0]>table[i-1][2]){
+                table[i][2]=table[i][0]+table[i][1];
+            }
+            else{
+                table[i][2]=table[i-1][2]+table[i][1];
+            }
+        }
+
+        //Calculating Turn Around Time ie. T.A.T. (C - A)
+        
+        for (int i=0; i<n;i++){
+            table[i][3]=table[i][2]-table[i][0];
+        }
+
+        //Calculating Wait Time ie. W.T. (T.A.T - B.T.)
+		
+        for (int i=0; i<n;i++){
+            table[i][4]=table[i][3]-table[i][1];
+        }
+
+        //Displaying the process table
+
+        System.out.println("Process Table --->\n");
+        System.out.println("Process Arrival Burst ComplTime TrnArnd WtTime");
+        for (int i=0; i<n; i++){
+            System.out.print("P"+(i+1)+"\t");
+            for(int j=0;j<5;j++){
+                System.out.print("" +table[i][j]+"\t");
+            }
+            System.out.println("");
+        }
+
+        //Displaying average time  and wait time
+        
+        for(int i=0;i<n;i++){
+            TAT+=table[i][3];
+            WT+=table[i][4];
+        }
+        TAT/=n;
+        WT/=n;
+        System.out.println("");
+        System.out.println("Average Turn Around Time : "+TAT);
+        System.out.println("Average Wait Time : "+WT);
+
+        //Displaying Gaant Chart
+
+        System.out.println("\n GAANT Chart --->");
+        System.out.println("");
+        for(int i=0;i<n;i++){
+            System.out.print(" ");
+            for(int j=0; j<table[i][1];j++){
+                System.out.print("_");
+            }
+        }
+        System.out.println("");
+        for(int i=0;i<n;i++){
+            System.out.print("|P"+i+"");
+            for(int j=0; j<(table[i][1]-2);j++){
+                System.out.print(" ");
+            }
+        }
+        System.out.print("|");
+        System.out.println("");
+        for(int i=0;i<n;i++){
+            System.out.print("|");
+            for(int j=0; j<table[i][1];j++){
+                System.out.print("_");
+            }
+        }
+        System.out.print("|");
+        System.out.println("\n\n");
+	}
+	public static void main(String args[]) {
+		Demo d1= new Demo();
+		d1.createTable();
+	}
+}
