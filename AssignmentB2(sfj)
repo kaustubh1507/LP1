@@ -1,0 +1,189 @@
+import java.lang.*;
+import java.util.*;
+// class Prcs{
+    
+//     int id,at,bt,tat,wt,ct;
+//     Prcs(int i){
+//         id=i;
+//     }
+//     void getData(int a, int b){
+//         at=a;
+//         bt=b;
+//     }
+//     friend class Demo;
+    
+// }
+class Demo{
+public
+	int n;
+    int TAT=0,WT=0;
+	int[][] table;
+    int timlin[];
+
+    Scanner sc1 =new Scanner(System.in);
+
+	Demo(){
+		System.out.println("Enter number of processes : ");
+		n=sc1.nextInt();
+	}
+
+	void createTable() {
+
+        //Taking arrival time(A) and process time(B) from user
+
+        table=new int[n][5];
+        System.out.println("Enter arrival time and burst time of the "+n+" processes : ");
+        for(int i=0; i<n;i++){
+            table[i][0]=sc1.nextInt();
+            table[i][1]=sc1.nextInt();
+        }
+    }
+
+    void sjfsrt(){
+
+        //Deals with shortest job first
+        table=new int [n][6];
+        System.out.println("Enter arrival time and burst time of the "+n+" processes : ");
+        for(int i=0; i<n;i++){
+            table[i][0]=sc1.nextInt();
+            table[i][1]=sc1.nextInt();
+            table[i][5]=i;
+        }
+
+        for(int i=0;i<n-1;i++){
+            int min=i;
+            for(int j=i+1;j<n;j++){
+                if(table[j][0]<table[min][0]){
+                    min=j;
+                }
+                else if(table[j][0]==table[min][0]){
+                    if(table[j][1]<table[min][1]){
+                        min=j;
+                    }
+                }
+            }
+            for(int p=0;p<6;p++){
+                int temp=table[i][p];
+                table[i][p]=table[min][p];
+                table[min][p]=temp;
+            }
+        }
+        for (int i=0;i<n;i++){
+            System.out.println("");
+            for(int j=0;j<2;j++){
+                System.out.print(""+table[i][j]+"\t");
+            }
+        }
+    }
+
+    void comptfcfs(){
+
+        //Calculating completion time(C) of processes
+
+        table[0][2]=table[0][0] + table[0][1];
+        for(int i=1;i<n;i++){
+            if(table[i][0]>table[i-1][2]){
+                table[i][2]=table[i][0]+table[i][1];
+            }
+            else{
+                table[i][2]=table[i-1][2]+table[i][1];
+            }
+        }
+    }
+    void tatwt(){
+
+        //Calculating Turn Around Time ie. T.A.T. (C - A)
+        
+        for (int i=0; i<n;i++){
+            table[i][3]=table[i][2]-table[i][0];
+        }
+
+        //Calculating Wait Time ie. W.T. (T.A.T - B.T.)com
+		
+        for (int i=0; i<n;i++){
+            table[i][4]=table[i][3]-table[i][1];
+        }
+    }
+    void disp(){
+
+        //Displaying the process table
+
+        System.out.println("Process Table --->\n");
+        System.out.println("Process Arrival Burst ComplTime TrnArnd WtTime");
+        for (int i=0; i<n; i++){
+            System.out.print("P"+(i+1)+"\t");
+            for(int j=0;j<5;j++){
+                System.out.print("" +table[i][j]+"\t");
+            }
+            System.out.println("");
+        }
+
+        //Displaying average time  and wait time
+        
+        for(int i=0;i<n;i++){
+            TAT+=table[i][3];
+            WT+=table[i][4];
+        }
+        TAT/=n;
+        WT/=n;
+        System.out.println("");
+        System.out.println("Average Turn Around Time : "+TAT);
+        System.out.println("Average Wait Time : "+WT);
+    }
+        
+    void fcfsgantt(){
+
+        //Displaying Gaant Chart
+
+        System.out.println("\n GAANT Chart --->");
+        System.out.println("");
+        for(int i=0;i<n;i++){
+            System.out.print(" ");F
+            for(int j=0; j<table[i][1];j++){
+                System.out.print("_");
+            }
+        }
+        System.out.println("");
+        for(int i=0;i<n;i++){
+            System.out.print("|P"+i+"");
+            for(int j=0; j<(table[i][1]-2);j++){
+                System.out.print(" ");
+            }
+        }
+        System.out.print("|");
+        System.out.println("");
+        for(int i=0;i<n;i++){
+            System.out.print("|");
+            for(int j=0; j<table[i][1];j++){
+                System.out.print("_");
+            }
+        }
+        System.out.print("|");
+        System.out.println("\n\n");
+	}
+	public static void main(String args[]) {
+		Demo d1= new Demo();
+        Scanner sc2=new Scanner(System.in);
+        int t=100;
+        while(t!=0){
+            System.out.println("\nEnter your choice\n1. First Come First Serve (FCFS)\n2. Shortest Job first(SJF)\n3. Priority\n4. Round Robin(RR)\n0.Exit");
+            t=sc2.nextInt();
+            if(t==0){
+                System.out.println("Thank you!");
+            }
+            else if(t==1){
+		        d1.createTable();
+                d1.comptfcfs();
+                d1.tatwt();
+                d1.disp();
+                d1.fcfsgantt();
+            }
+            else if(t==2){
+                d1.sjfsrt();
+            }
+            else {
+                System.out.println("Enter valid choice!");
+            }
+        }
+	}
+}
