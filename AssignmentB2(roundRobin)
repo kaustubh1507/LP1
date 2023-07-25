@@ -1,0 +1,77 @@
+import java.util.*;
+import java.lang.*;
+
+class Proc{
+    int AT,BT,CT,TAT,WT,TL,id;
+    Proc(){
+        //System.out.println("done");
+        AT=0;
+        BT=CT=TAT=WT=TL=id=0;
+        // BT=k;
+        // TL=k;
+    }
+    void calc(){
+        TAT=CT;
+        WT=TAT-BT;
+    }
+    void disp(){
+        System.out.println((id+1) +"\t"+AT+"\t"+ BT +"\t"+ CT +"\t"+ TAT +"\t"+ WT);
+    }
+    public static void main(String args[]){
+        Scanner sc1=new Scanner(System.in);
+        int n=0;
+        System.out.println("Enter number of processes : ");
+        n=sc1.nextInt();
+        Proc p[]=new Proc[n];
+        for (int i=0; i<n;i++){
+            System.out.println("Enter Burst time : ");
+            int temp=sc1.nextInt();
+            p[i] = new Proc();
+            p[i].BT=temp;
+            p[i].TL=temp;
+            p[i].id=i;
+
+        }
+        System.out.println("Enter time constant : ");
+        int tc=sc1.nextInt();
+        Queue<Proc> queue = new LinkedList();
+        for(int i=0;i<n;i++){
+            if(p[i].BT!=0)
+                queue.add(p[i]);
+        }
+        int t=0;
+        while(!queue.isEmpty()){
+            Proc temp=queue.remove();
+            if(temp.TL>tc){
+                temp.TL-=tc;
+                queue.add(temp);
+                System.out.print("\t"+t);
+                System.out.print(" P"+(temp.id+1)+" ");
+                t+=tc;
+                System.out.print(t);
+            }
+            else if(temp.TL==tc){
+                temp.TL=0;
+                System.out.print("\t"+t);
+                System.out.print(" P"+(temp.id+1)+" ");
+                t+=tc;
+                System.out.print(t);
+                temp.CT=t;
+            }
+            else{
+                System.out.print("\t"+t);
+                System.out.print(" P"+(temp.id+1)+" ");
+                t+=temp.TL;
+                temp.TL=0;
+                System.out.print(t);
+                temp.CT=t;
+            }
+        }
+        System.out.println("\n\nProcess Table --->\n");
+        System.out.println("Process Arrival Burst ComplTime TrnArnd WtTime");
+        for (int i=0;i<n;i++){
+            p[i].calc();
+            p[i].disp();
+        }
+    }
+}
