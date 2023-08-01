@@ -9,12 +9,12 @@ import java.io.*;
 class Pass1 {
     Map<String, String> hm= new HashMap<String, String>();
     void Mot(){
-        hm.put("START", "");
-        hm.put("MOVER", "");
-        hm.put("MODEM", "");
-        hm.put("ADD", "");
-        hm.put("DC", "");
-        hm.put("END", "");
+        hm.put("START", "01");
+        hm.put("MOVER", "02");
+        hm.put("MODEM", "03");
+        hm.put("ADD", "04");
+        hm.put("DC", "05");
+        hm.put("END", "06");
     }
     void analyze(String s){
         String label="";
@@ -22,29 +22,55 @@ class Pass1 {
         String op1="";
         String op2="";
         String colo=":";
+        String temp="";
         boolean colonflag=false;
         for(int i=0;i<s.length();i++){
             if(s.charAt(i)==colo.charAt(0)){
                 colonflag=true;
             }
         }
-        for(int i=0;i<s.length();i++){
-            if(colonflag==true){
-                while(s.charAt(i)!=colo.charAt(0)){
-                    label+=s.charAt(i);
-                }
-                i++;
-            }
-            else break;
-
+        //int i=0;
+        if(colonflag==true){
+            String[] tokens = s.split(":");
+            label=tokens[0];
+            temp=tokens[1];
+                        // while(s.charAt(i)!=colo.charAt(0)){
+            //     label+=s.charAt(i);
+            //     i++;
+            // }
+            
         }
-        System.out.println(label);
+        else{
+            temp=s;
+        }
+        String[] t2=temp.split(" ");
+        if(t2.length==1){
+            instr=t2[0];
+        }
+        else if(t2.length==2){
+            instr=t2[0];
+            
+            String[] s1=t2[1].split(",");
+            if(s1.length==1)
+                op1=s1[0];
+            else{
+                op1=s1[0];
+                op2=s1[1];
+            }
+        }
+        
+        
+        
+        System.out.print("\n"+label+":\t");
+        System.out.print(instr+"\t");
+        System.out.print(op1+"\t");
+        System.out.print(op2+"\t");
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter("machinecode.txt",true));
             out.write(s+"\n");
             out.close();
-            System.out.println("Successfully written.");
+            //System.out.println("Successfully written.");
         }
         catch (IOException e) {
             System.out.println("An error has occurred.");
