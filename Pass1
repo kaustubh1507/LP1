@@ -17,8 +17,10 @@ class Pass1 {
         DS.put("DC", "DC 01");
         AD.put("END", "AD 02");
     }
-    int analyze(String s,int l){
+    int[] analyze(String s,int l,int littab,int st){
         int lc=l;
+        int stc=st;
+        int ltabc=littab;
         String label="";
         String instr="";
         String op1="";
@@ -96,8 +98,14 @@ class Pass1 {
                 System.out.print(op1prt+"\t");
             }
             else{
-                op1prt="(c,"+op1+")";
-                System.out.print(op1prt+"\t");
+                if(op1.contains("=")){
+                    ltabc++;
+                    op1prt="(LT,"+ltabc+")";
+                }
+                else {
+                    op1prt="(c,"+op1+")";
+                    System.out.print(op1prt+"\t");
+                }
             }
             if(op2.equals("AREG")){
                 op2prt="(REG,01)";
@@ -112,9 +120,15 @@ class Pass1 {
                 System.out.print(op2prt+"\t");
             }
             else{
-                if(!op2.equals(""))
-                op2prt="(c,"+op2+")";
-                System.out.print(op2prt+"\t");
+                if(op2.contains("=")){
+                    ltabc++;
+                    op2prt="(LT,"+ltabc+")";
+                }
+                else{
+                    if(!op2.equals(""))
+                    op2prt="(c,"+op2+")";
+                    System.out.print(op2prt+"\t");
+                }
             }
             
         }
@@ -192,11 +206,12 @@ class Pass1 {
             System.out.println("An error has occurred.");
             e.printStackTrace();
         }
-        return lc;
+        int[] p = {lc,ltabc,stc};
+        return p;
     }
     void rdfl(){
         boolean flag=false;
-        int ll=0;
+        int ll=0,ltb=0,s=0;
         try {
             File Obj = new File("opcode.txt");
             Scanner Reader = new Scanner(Obj);
@@ -207,8 +222,10 @@ class Pass1 {
                 // if(chk[0]=="START")
                 //     flag=true;
                 // if(flag==true)
-                    int lc=analyze(data,ll);
-                    ll=lc;
+                    int[] val=analyze(data,ll,ltb,s);
+                    ll=val[0];
+                    ltb=val[1];
+                    s=val[2];
                 // if(chk[0]=="END")
                 //     flag=false;
             }
