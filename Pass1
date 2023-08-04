@@ -2,21 +2,23 @@ import java.io.File;
 import java.util.*;
 import java.lang.*;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.*;
 class Pass1 {
-    Map<String, String> hm= new HashMap<String, String>();
-    void Mot(){
-        hm.put("START", "01");
-        hm.put("MOVER", "02");
-        hm.put("MODEM", "03");
-        hm.put("ADD", "04");
-        hm.put("DC", "05");
-        hm.put("END", "06");
+    Map<String, String> IS= new HashMap<String, String>();
+    Map<String, String> AD = new HashMap<String,String>();
+    Map<String, String> DS= new HashMap<String, String>();
+    Pass1(){
+        AD.put("START", "AD 01");
+        IS.put("MOVER", "IS 01");
+        IS.put("MODEM", "IS 02");
+        IS.put("ADD", "IS 03");
+        DS.put("DC", "DC 01");
+        AD.put("END", "AD 02");
     }
-    void analyze(String s){
+    int analyze(String s,int l){
+        int lc=l;
         String label="";
         String instr="";
         String op1="";
@@ -24,6 +26,13 @@ class Pass1 {
         String colo=":";
         String temp="";
         boolean colonflag=false;
+        int hm=0;
+        String insprt="bro";
+        String op1prt="";
+        String labprt="";
+        String op2prt="";
+
+        ////////////////////////////////////////////////////////////////
         for(int i=0;i<s.length();i++){
             if(s.charAt(i)==colo.charAt(0)){
                 colonflag=true;
@@ -59,12 +68,119 @@ class Pass1 {
             }
         }
         
-        
+    ///////////////////////////////////////////////////////////////////    
         
         System.out.print("\n"+label+":\t");
         System.out.print(instr+"\t");
         System.out.print(op1+"\t");
         System.out.print(op2+"\t");
+
+    ///////////////////////////////////////////////////////////////////
+
+        if(IS.containsKey(instr)){
+            hm=1;
+            insprt=IS.get(instr);
+            lc++;
+            System.out.print(lc+"\t");
+            System.out.print(insprt+"\t");
+            if(op1.equals("AREG")){
+                op1prt="(REG,01)";
+                System.out.print(op1prt+"\t");
+            }
+            else if(op1.equals("BREG")){
+                op1prt="(REG,02)";
+                System.out.print(op1prt+"\t");
+            }
+            else if(op1.equals("CREG")){
+                op1prt="(REG,03)";
+                System.out.print(op1prt+"\t");
+            }
+            else{
+                op1prt="(c,"+op1+")";
+                System.out.print(op1prt+"\t");
+            }
+            if(op2.equals("AREG")){
+                op2prt="(REG,01)";
+                System.out.print(op2prt+"\t");
+            }
+            else if(op2.equals("BREG")){
+                op2prt="(REG,02)";
+                System.out.print(op2prt+"\t");
+            }
+            else if(op2.equals("CREG")){
+                op2prt="(REG,03)";
+                System.out.print(op2prt+"\t");
+            }
+            else{
+                if(!op2.equals(""))
+                op2prt="(c,"+op2+")";
+                System.out.print(op2prt+"\t");
+            }
+            
+        }
+        else if(AD.containsKey(instr)){
+            hm=2;
+            if(instr.equals("START") && op1!=""){
+                lc=Integer.parseInt(op1);
+                lc--;
+                //System.out.print(lc+"this\t");
+            }
+            insprt=AD.get(instr);
+            System.out.print("\t"+insprt+"\t");
+            //System.out.print(lc+"\t");
+        }
+        else if(DS.containsKey(instr)){
+            hm=3;
+            insprt=DS.get(instr);
+            lc++;
+            System.out.print(lc+"\t");
+            System.out.print(insprt+"\t");
+            if(op1.equals("AREG")){
+                op1prt="(REG,01)";
+                System.out.print(op1prt+"\t");
+            }
+            else if(op1.equals("BREG")){
+                op1prt="(REG,02)";
+                System.out.print(op1prt+"\t");
+            }
+            else if(op1.equals("CREG")){
+                op1prt="(REG,03)";
+                System.out.print(op1prt+"\t");
+            }
+            else{
+                if(!op1.equals(""))
+                op1prt="(c,"+op1+")";
+                System.out.print(op1prt+"\t");
+            }
+            if(op2.equals("AREG")){
+                op2prt="(REG,01)";
+                System.out.print(op2prt+"\t");
+            }
+            else if(op2.equals("BREG")){
+                op2prt="(REG,02)";
+                System.out.print(op2prt+"\t");
+            }
+            else if(op2.equals("CREG")){
+                op2prt="(REG,03)";
+                System.out.print(op2prt+"\t");
+            }
+            else{
+                if(!op2.equals(""))
+                op2prt="(c,"+op2+")";
+                System.out.print(op2prt+"\t");
+            }
+            
+            
+        }
+        // System.out.print(insprt+"\t");
+        // System.out.print(lc+"\t");
+
+    //////////////////////////////////////////////////////////////////
+
+
+        
+
+    ///////////////////////////////////////////////////////////////////
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter("machinecode.txt",true));
@@ -76,15 +192,25 @@ class Pass1 {
             System.out.println("An error has occurred.");
             e.printStackTrace();
         }
+        return lc;
     }
     void rdfl(){
+        boolean flag=false;
+        int ll=0;
         try {
             File Obj = new File("opcode.txt");
             Scanner Reader = new Scanner(Obj);
             while (Reader.hasNextLine()) {
                 String data = Reader.nextLine();
                 //System.out.println(data);
-                analyze(data);
+                //String[] chk=data.split(" ");
+                // if(chk[0]=="START")
+                //     flag=true;
+                // if(flag==true)
+                    int lc=analyze(data,ll);
+                    ll=lc;
+                // if(chk[0]=="END")
+                //     flag=false;
             }
             Reader.close();
         }
