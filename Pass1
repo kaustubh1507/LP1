@@ -1,14 +1,26 @@
-import java.io.File;
 import java.util.*;
 import java.lang.*;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.io.*;
+
+// class tuple implements Serializable{ 
+//     String elem1="";
+//     String elem2="";
+//     String elem3="";
+//     String elem4="";
+//     tuple(String s1,String s2,String s3,String s4){
+//         this.elem1=s1;
+//         this.elem2=s2;
+//         this.elem3=s3;
+//         this.elem4=s4;
+//     }
+// }
 class Pass1 {
     Map<String, String> IS= new HashMap<String, String>();
     Map<String, String> AD = new HashMap<String,String>();
     Map<String, String> DS= new HashMap<String, String>();
+    static Map<String,Integer> literaltab=new HashMap</*String, Integer*/>();
+    static Map<String,Integer> symboltab=new HashMap<String, Integer>();
     Pass1(){
         AD.put("START", "AD 01");
         IS.put("MOVER", "IS 01");
@@ -17,10 +29,27 @@ class Pass1 {
         DS.put("DC", "DC 01");
         AD.put("END", "AD 02");
     }
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+}
+
     int[] analyze(String s,int l,int littab,int st){
+        //String towrite;
         int lc=l;
         int stc=st;
         int ltabc=littab;
+        String final1="";
+        String temp1="";
+        String temp2="";
+        String temp3="";
         String label="";
         String instr="";
         String op1="";
@@ -45,6 +74,7 @@ class Pass1 {
             String[] tokens = s.split(":");
             label=tokens[0];
             temp=tokens[1];
+            symboltab.replace(label,lc+1);
                         // while(s.charAt(i)!=colo.charAt(0)){
             //     label+=s.charAt(i);
             //     i++;
@@ -85,49 +115,85 @@ class Pass1 {
             lc++;
             System.out.print(lc+"\t");
             System.out.print(insprt+"\t");
+            temp1=String.valueOf(lc)+"\t"+insprt;
             if(op1.equals("AREG")){
                 op1prt="(REG,01)";
                 System.out.print(op1prt+"\t");
+                temp2=temp1+" "+op1prt;
             }
             else if(op1.equals("BREG")){
                 op1prt="(REG,02)";
                 System.out.print(op1prt+"\t");
+                temp2=temp1+" "+op1prt;
             }
             else if(op1.equals("CREG")){
                 op1prt="(REG,03)";
                 System.out.print(op1prt+"\t");
+                temp2=temp1+" "+op1prt;
             }
             else{
                 if(op1.contains("=")){
                     ltabc++;
                     op1prt="(LT,"+ltabc+")";
+                    String tt[]=op1.split("'");
+                    literaltab.put(tt[1],lc);
+                    System.out.print(op1prt+"\t");
+                    temp2=temp1+" "+op1prt;
                 }
                 else {
-                    op1prt="(c,"+op1+")";
-                    System.out.print(op1prt+"\t");
+                    if(isNumeric(op1)){
+                        op1prt="(c,"+op1+")";
+                        System.out.print(op1prt+"\t");
+                        temp2=temp1+" "+op1prt;
+                    }
+                    else if(op1!=""){
+                        stc++;
+                        op1prt="(ST,"+stc+")";
+                        //String tt[]=op1.split("");
+                        symboltab.put(op1,0);
+                        System.out.print(op1prt+"\t");
+                        temp2=temp1+" "+op1prt;
+                    }
                 }
             }
             if(op2.equals("AREG")){
                 op2prt="(REG,01)";
                 System.out.print(op2prt+"\t");
+                temp3=temp2+" "+op2prt;
             }
             else if(op2.equals("BREG")){
                 op2prt="(REG,02)";
                 System.out.print(op2prt+"\t");
+                temp3=temp2+" "+op2prt;
             }
             else if(op2.equals("CREG")){
                 op2prt="(REG,03)";
                 System.out.print(op2prt+"\t");
+                temp3=temp2+" "+op2prt;
             }
             else{
                 if(op2.contains("=")){
                     ltabc++;
                     op2prt="(LT,"+ltabc+")";
+                    String tt[]=op2.split("'");
+                    literaltab.put(tt[1],lc);
+                    System.out.print(op2prt+"\t");
+                    temp3=temp2+" "+op2prt;
                 }
                 else{
-                    if(!op2.equals(""))
-                    op2prt="(c,"+op2+")";
-                    System.out.print(op2prt+"\t");
+                    if(isNumeric(op2)){
+                        op2prt="(c,"+op2+")";
+                        System.out.print(op2prt+"\t");
+                        temp3=temp2+" "+op2prt;
+                    }
+                    else if(op2!=""){
+                        stc++;
+                        op2prt="(ST,"+stc+")";
+                        //String tt[]=op2.split("'");
+                        symboltab.put(op2,0);
+                        System.out.print(op2prt+"\t");
+                        temp3=temp2+" "+op2prt;
+                    }
                 }
             }
             
@@ -141,6 +207,7 @@ class Pass1 {
             }
             insprt=AD.get(instr);
             System.out.print("\t"+insprt+"\t");
+            temp3="\t"+insprt;
             //System.out.print(lc+"\t");
         }
         else if(DS.containsKey(instr)){
@@ -149,43 +216,100 @@ class Pass1 {
             lc++;
             System.out.print(lc+"\t");
             System.out.print(insprt+"\t");
+            temp1=String.valueOf(lc)+"\t"+insprt;
             if(op1.equals("AREG")){
                 op1prt="(REG,01)";
                 System.out.print(op1prt+"\t");
+                temp2=temp1+" "+op1prt;
             }
             else if(op1.equals("BREG")){
                 op1prt="(REG,02)";
                 System.out.print(op1prt+"\t");
+                temp2=temp1+" "+op1prt;
             }
             else if(op1.equals("CREG")){
                 op1prt="(REG,03)";
                 System.out.print(op1prt+"\t");
+                temp2=temp1+" "+op1prt;
             }
             else{
-                if(!op1.equals(""))
-                op1prt="(c,"+op1+")";
-                System.out.print(op1prt+"\t");
+                if(op2.contains("=")){
+                    ltabc++;
+                    String tt[]=op1.split("'");
+                    literaltab.put(tt[1],lc);
+                    op1prt="(LT,"+ltabc+")";
+                    
+                    System.out.print(op1prt+"\t");
+                    temp3=temp2+" "+op1prt;
+                }
+                else{
+                    if(isNumeric(op1)){
+                        op1prt="(c,"+op1+")";
+                        System.out.print(op1prt+"\t");
+                        temp2=temp1+" "+op1prt;
+                    }
+                    else if(op1!=""){
+                        stc++;
+                        op1prt="(ST,"+stc+")";
+                        //String tt[]=op1.split("'");
+                        symboltab.put(op1,0);
+                        System.out.print(op1prt+"\t");
+                        temp2=temp1+" "+op1prt;
+                    }
+                }
             }
             if(op2.equals("AREG")){
                 op2prt="(REG,01)";
                 System.out.print(op2prt+"\t");
+                temp3=temp2+" "+op2prt;
             }
             else if(op2.equals("BREG")){
                 op2prt="(REG,02)";
                 System.out.print(op2prt+"\t");
+                temp3=temp2+" "+op2prt;
             }
             else if(op2.equals("CREG")){
                 op2prt="(REG,03)";
                 System.out.print(op2prt+"\t");
+                temp3=temp2+" "+op2prt;
             }
             else{
-                if(!op2.equals(""))
-                op2prt="(c,"+op2+")";
-                System.out.print(op2prt+"\t");
+                if(op2.contains("=")){
+                    ltabc++;
+                    String tt[]=op2.split("'");
+                    literaltab.put(tt[1],lc);
+                    op2prt="(LT,"+ltabc+")";
+                    
+                    System.out.print(op2prt+"\t");
+                    temp3=temp2+" "+op2prt;
+                }
+                else{
+                    if(isNumeric(op2)){
+                        op2prt="(c,"+op2+")";
+                        System.out.print(op2prt+"\t");
+                        temp3=temp2+" "+op2prt;
+                    }
+                    else if(op2!=""){
+                        stc++;
+                        op2prt="(ST,"+stc+")";
+                        //String tt[]=op2.split("'");
+                        symboltab.put(op2,0);
+                        System.out.print(op2prt+"\t");
+                        temp3=temp2+" "+op2prt;
+                    }
+                }
             }
             
             
         }
+        if(temp2==""){
+            temp2=temp1;
+        }
+        if(temp3==""){
+            temp3=temp2;
+        }
+        final1=temp3;
+        //tuple towrite=new tuple(String.valueOf(lc),insprt,op1prt,op2prt);
         // System.out.print(insprt+"\t");
         // System.out.print(lc+"\t");
 
@@ -198,9 +322,13 @@ class Pass1 {
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter("machinecode.txt",true));
-            out.write(s+"\n");
+            //String towrite=String.valueOf(lc) + ;
+            out.write(final1+"\n");
             out.close();
-            //System.out.println("Successfully written.");
+            // FileOutputStream fileOut = new FileOutputStream("machinecode.txt");
+            // ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            // objectOut.writeObject(towrite);
+            // objectOut.close();
         }
         catch (IOException e) {
             System.out.println("An error has occurred.");
@@ -241,6 +369,9 @@ class Pass1 {
  
         Pass1 p1=new Pass1();// File name specified
         p1.rdfl();
+        System.out.println("");
+        System.out.println(""+literaltab);
+        System.out.println(""+symboltab);
     }
 }
 
