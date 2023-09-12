@@ -1,0 +1,86 @@
+#include <bits/stdc++.h>
+#include <string>
+#include <fstream>
+class MacroPass2{
+    string MNT[2][2];
+    string MDT[10]={"Ramu ","Meets","Shamuet","is","a","good","boy","Tej","is","a"};
+    string MPT[8][2];
+    public:
+    MacroPass2(){
+        
+        MNT[0][0]="INCR";
+        MNT[0][1]="2";
+        MNT[0][2]="3";
+        MNT[0][3]="0";
+        MNT[1][0]="DECR";
+        MNT[1][1]="2";
+        MNT[1][2]="5";
+        MNT[1][3]="3";
+       
+        MPT[0][0]="A";
+        MPT[1][0]="B";
+        MPT[2][0]="C";
+        MPT[3][0]="D";
+
+    }
+    string[] adv_tokenizer(string s, char del, String t[])
+    {
+        stringstream ss(s);
+        string word;
+        i=0;
+        while (!ss.eof()) {
+            getline(ss, word, del);
+            t[i]=word;
+        }
+        return t;
+    }
+ 
+    void checkline(String Line){
+        String token[2];
+        bool flag=0;
+        token=adv_tokenizer(Line, ' ', token);
+        for(i=0;i<2;i++){
+            if(token[0]==MNT[i][0]){
+                flag=1;
+                break;
+            }
+        }
+        if(flag==0){
+            ofstream fout;
+            fout.open("MP2OP.txt",ios::app);
+            fout<<Line;
+            fout.cloe();
+        }
+        else{
+            ofstream fout;
+            fout.open("MP2OP.txt",ios::app);
+            int i=0;
+            while(token[0]!=MNT[i][0]){
+                i++;
+            }
+            String p[2];
+            String p=adv_tokenizer(token[1], ',', p);
+            int para=stoi(MNT[i][1]);
+            int def=stoi(MNT[i][2]);
+            int defptr=stoi(MNT[i][3]);
+            for(int j=defptr;j<(def+defptr);j++){
+                fout<<MDT[j];
+            }
+
+        }
+    void pass2(){
+        
+        ifstream fin;
+        String line;
+
+        fin.open("MP2IP.txt");
+        while(getline(fin,line)){
+            linecheck(line);
+        }
+        fin.close();
+    }
+};
+int main(){
+    MacroPass2 m;
+    m.pass2();
+}
