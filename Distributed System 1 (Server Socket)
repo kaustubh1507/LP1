@@ -1,0 +1,69 @@
+//Client side
+
+// Kaustubh Joshi 31233
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.io.DataOutputStream;
+
+
+public class socket{
+    public static void main(String[] args){
+        try{
+            Scanner sc1 = new Scanner (System. in) ;
+            Socket s = new Socket ("127.0.0.1",8080);
+            DataOutputStream out = new DataOutputStream(s.getOutputStream());
+            String line = "";
+            while (!line.equals("over")){
+                try{
+                    System.out.println("write line");
+                    line = sc1.nextLine();
+                    out.writeUTF(line);
+                }
+                catch(IOException i){
+                    System.out.println(i);
+                }
+            }
+            out.flush();
+            out.close();
+            s.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+    }
+}
+
+//Server side
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class socket2{
+    public static void main(String[] args){
+        try{
+            ServerSocket ss = new ServerSocket(8080);
+            Socket s = ss.accept();
+            DataInputStream in = new DataInputStream(s.getInputStream());
+            System.out.println("Hello");
+            String line = "";
+            System.out.println("Connection is Successfully established");
+            while(!line.equals("over")){
+                try{
+                    line = in.readUTF();
+                    System.out.println(line);
+                }
+                catch(IOException i){
+                    System.out.println(i);
+                }
+            }
+            System.out.println("Connection is Successfully established");
+            ss.close();
+        }
+        catch(Exception e){
+             System.out.println(e);
+        }
+    }
+}
